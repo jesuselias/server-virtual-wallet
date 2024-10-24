@@ -23,7 +23,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-
 // Importar y usar la función de conexión
 const connectDB = require('./database/db');
 
@@ -33,12 +32,16 @@ connectDB();
 const registerRoutes = require('./routes/register');
 const profileRoutes = require('./routes/profile');
 const reloadWalletRouter = require('./routes/reloadWallet');
+const payRouter = require('./routes/pay');
+const checkBalanceRouter = require('./routes/checkBalance');
 
 
 // Usar las rutas
 app.use('/api/register', registerRoutes);
 app.use('/api/user', profileRoutes);
 app.use('/api', reloadWalletRouter);
+app.use('/api', payRouter);
+app.use('/api', checkBalanceRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

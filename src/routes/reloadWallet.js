@@ -3,6 +3,11 @@ const router = express.Router();
 const Wallet = require('../models/Wallet');
 const User = require('../models/User');
 
+// Función auxiliar para limpiar el número de teléfono
+const cleanPhoneNumber = (phone) => {
+  return phone.replace(/^\+|\s+/g, '').replace(/\D/g, '');
+};
+
 router.post('/reload-wallet', async (req, res) => {
   try {
     const { documento, celular, valor } = req.body;
@@ -15,8 +20,11 @@ router.post('/reload-wallet', async (req, res) => {
     // Convierte valor a número decimal
     const valorDecimal = parseFloat(valor);
 
-    // Busca el usuario por documento
-    const user = await User.findOne({ documento });
+    // Limpia el número de teléfono
+    const cleanedCelular = cleanPhoneNumber(celular);
+
+    // Busca el usuario por documento y celular limpio
+    const user = await User.findOne({ documento: documento, celular: cleanedCelular });
 
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
@@ -44,7 +52,13 @@ router.post('/reload-wallet', async (req, res) => {
     // Actualiza el saldo del usuario
     await User.findByIdAndUpdate(user._id, { balance: wallet.balance }, { new: true });
 
-    res.status(200).json({ message: 'Billetera recargada exitosamente' });
+    // Puedes usar el _id de la transacción aquí si lo necesitas
+    const transactionId = wallet._id.toString();
+
+    res.status(200).json({
+      message: 'Billetera recargada exitosamente',
+      sessionId: transactionId
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al recargar la billetera' });

@@ -7,11 +7,18 @@ router.post('/', async (req, res) => {
   try {
     const { documento, nombres, email, celular } = req.body;
 
-    const newUser = await User.create({
+    // Función auxiliar para limpiar el número de teléfono
+    const cleanPhoneNumber = (phone) => {
+      return phone.replace(/^\+|\s+/g, '').replace(/\D/g, '');
+    };
+
+    const cleanedCelular = cleanPhoneNumber(celular);
+
+    await User.create({
       documento,
       nombres,
       email,
-      celular,
+      celular: cleanedCelular,
       roles: ['cliente']
     });
 
