@@ -54,9 +54,10 @@ async function handlePayment(req, res) {
     await wallet.save();
 
     res.status(200).json({
-      message: 'Se ha enviado un correo con éxito',
-      text: 'Se envió un id de sesión con el cual puede verificar la compra',
-    });
+      "message": "Se ha enviado un correo electrónico con éxito. \n\nEn él encontrará un ID de sesión para verificar la compra.",
+      "success": true
+    }
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al iniciar el pago' });
